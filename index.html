@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CLK Invoice System A4 Updated</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@300;400;700&family=Kantumruy+Pro:wght@300;400;500;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="html2canvas.min.js"></script>
+  <script src="clk-logo-data.js"></script>
+  <style>
+    :root {
+      --bg-1: #071b34;
+      --bg-2: #123b67;
+      --bg-3: #1f6d8f;
+      --gold: #e8bf57;
+      --white: #ffffff;
+      --text: #f3f7fb;
+      --dark-text: #132945;
+      --border: rgba(255,255,255,0.14);
+      --shadow: 0 12px 30px rgba(0, 8, 40, 0.22);
+      --radius: 10px;
+      --a4-width: 210mm;
+      --a4-height: 297mm;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: 'Battambang', 'Kantumruy Pro', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 48% 18%, rgba(80, 145, 180, 0.20), transparent 30%),
+        radial-gradient(circle at 12% 88%, rgba(54, 114, 145, 0.16), transparent 22%),
+        linear-gradient(145deg, var(--bg-1), var(--bg-2) 58%, var(--bg-3));
+    }
+    body { padding: 24px; }
+
+    .app {
+      max-width: 1700px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel, .invoice-shell {
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.07));
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 20px;
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+    }
+
+    .brand-mini {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .brand-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: block;
+      object-fit: cover;
+      border: 1px solid rgba(245,197,66,0.55);
+      box-shadow: 0 8px 18px rgba(0,20,60,0.18);
+    }
+
+    .section-title {
+      margin: 18px 0 10px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .grid-1 { display: grid; gap: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,0.95);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      outline: none;
+      font-family: 'Battambang', sans-serif;
+      font-size: 0.94rem;
+    }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.62); }
+    select option { color: #111; }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-family: 'Kantumruy Pro', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), #ffdf7f);
+      color: #162646;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+    .btn-add {
+      background: rgba(21, 179, 107, 0.18);
+      color: #c7ffe2;
+      border: 1px solid rgba(21, 179, 107, 0.35);
+      width: 100%;
+    }
+    .btn-edit {
+      background: rgba(245, 197, 66, 0.18);
+      color: #ffe9a3;
+      border: 1px solid rgba(245, 197, 66, 0.36);
+      padding: 8px 10px;
+      font-size: 0.82rem;
+    }
+    .btn-delete {
+      background: rgba(231, 90, 90, 0.16);
+      color: #ffd9d9;
+      border: 1px solid rgba(231, 90, 90, 0.3);
+      padding: 8px 10px;
+      font-size: 0.82rem;
+    }
+    .item-manager {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .item-manager-row, .service-manager-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+    .service-manager-row { grid-template-columns: 1fr auto; }
+    .item-manager-name, .service-manager-name {
+      color: #fff;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .item-manager-meta {
+      display: block;
+      color: rgba(255,255,255,0.68);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+    .sheet-box, .apps-script {
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+    .apps-script {
+      font-family: monospace;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      max-height: 220px;
+      overflow: auto;
+      color: #d9ecff;
+    }
+    .mini-note {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.55;
+      margin-top: 10px;
+    }
+
+    .invoice-shell { padding: 22px; overflow: auto; }
+    .invoice {
+      width: var(--a4-width);
+      min-height: var(--a4-height);
+      margin: 0 auto;
+      background:
+        radial-gradient(circle at 48% 12%, rgba(67, 130, 164, 0.20), transparent 25%),
+        linear-gradient(155deg, #061a34, #0d4674 58%, #126b8f);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .invoice-inner {
+      position: relative;
+      padding: 14mm 11mm 10mm;
+      min-height: var(--a4-height);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .invoice-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 295px;
+      gap: 16px;
+      align-items: start;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .big-logo {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      border: 2px solid rgba(245,197,66,0.88);
+      display: block;
+      object-fit: cover;
+      box-shadow: 0 10px 24px rgba(0,20,60,0.28);
+      flex-shrink: 0;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      line-height: 1.12;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .brand h1 span { color: var(--gold); }
+    .service-brand-name {
+      display: block;
+      font-size: 30px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0;
+    }
+    .service-brand-title {
+      display: block;
+      margin-top: 6px;
+      font-size: 23px;
+      line-height: 1.08;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+    .header-right { text-align: right; }
+    .invoice-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.15rem;
+      font-weight: 800;
+      margin: 0 0 10px;
+      color: #fff;
+    }
+    .meta-box {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+    }
+    .meta-chip {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.08));
+      border: 1px solid rgba(255,255,255,0.16);
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: #fff;
+      width: 100%;
+      font-size: 0.9rem;
+    }
+    .meta-chip strong { white-space: nowrap; }
+    .meta-chip span {
+      text-align: right;
+      white-space: nowrap;
+      font-size: 0.82rem;
+      overflow-wrap: normal;
+    }
+
+    .cards-2, .summary-row, .footer-cards { display: grid; gap: 12px; }
+    .cards-2 { grid-template-columns: 1fr 1fr; }
+    .summary-row { grid-template-columns: 1fr 320px; }
+    .footer-cards { grid-template-columns: 1fr; justify-items: end; margin-top: auto; }
+
+    .card {
+      background: rgba(244, 247, 251, 0.82);
+      color: var(--dark-text);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.38);
+      box-shadow: 0 10px 26px rgba(0,20,60,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .card-title {
+      margin: 0 0 10px;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #17315f;
+    }
+    .detail-line {
+      margin: 7px 0;
+      line-height: 1.5;
+      font-size: 1.04rem;
+      word-break: break-word;
+    }
+    .service-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(0,74,173,0.12), rgba(245,197,66,0.14));
+      border: 1px solid rgba(0,74,173,0.14);
+      color: #0d3475;
+      font-weight: 800;
+      font-size: 1rem;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .table-card {
+      background: rgba(244, 247, 251, 0.82);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.38);
+      box-shadow: 0 10px 26px rgba(0,20,60,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    .table thead th {
+      background: linear-gradient(180deg, #0a3155, #061f3e);
+      color: #fff;
+      font-size: 1rem;
+      padding: 12px 12px;
+      text-align: left;
+    }
+    .table tbody td {
+      padding: 13px 12px;
+      font-size: 1.04rem;
+      color: #132752;
+      background: rgba(244,247,251,0.72);
+      vertical-align: top;
+    }
+    .table tbody tr + tr td { border-top: 1px solid rgba(13, 38, 82, 0.10); }
+    .desc-main { font-weight: 700; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .table th:nth-child(2), .table td:nth-child(2) { text-align: center; }
+    .table th:nth-child(3), .table td:nth-child(3),
+    .table th:nth-child(4), .table td:nth-child(4) { text-align: right; }
+
+    .money-box {
+      background: linear-gradient(180deg, #0b3c64, #061f3e);
+      color: #fff;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 14px 24px rgba(0,20,60,0.22);
+    }
+    .money-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+      font-size: 1.05rem;
+    }
+    .grand-total {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid rgba(245,197,66,0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .grand-total strong {
+      color: var(--gold);
+      font-size: 1.75rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .terms-plain {
+      color: #fff;
+      padding: 4px 2px;
+      align-self: start;
+    }
+    .terms-title {
+      margin: 0 0 8px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .terms-list {
+      margin: 0;
+      padding-left: 18px;
+      color: rgba(255,255,255,0.95);
+      line-height: 1.72;
+      font-size: 1.02rem;
+    }
+
+    .footer-signature {
+      width: calc((100% - 12px) / 2);
+      padding: 14px 0;
+    }
+    .signature {
+      margin-top: 16px;
+      text-align: right;
+      text-shadow: 0 2px 8px rgba(0, 20, 70, 0.28);
+    }
+    .sign-name {
+      display: inline-block;
+      font-family: 'Ang TaPich', 'Battambang', 'Kantumruy Pro', sans-serif;
+      font-weight: 400;
+      color: #ffffff;
+      font-size: 1.58rem;
+      line-height: 1.6;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(255,255,255,0.82);
+    }
+    .sign-role {
+      font-family: 'Battambang', 'Kantumruy Pro', sans-serif;
+      color: rgba(255,255,255,0.9);
+      font-size: 0.95rem;
+      line-height: 1.45;
+      margin-top: 6px;
+    }
+    .footer-line { text-align: center; color: rgba(255,255,255,0.96); font-size: 1.02rem; font-weight: 700; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.16); }
+    .hidden { display: none !important; }
+
+    @media (max-width: 1480px) {
+      .app { grid-template-columns: 1fr; }
+      .panel { position: static; max-height: none; }
+      .invoice-shell { overflow-x: auto; }
+    }
+
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      html, body {
+        width: 210mm;
+        height: 297mm;
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body * { visibility: hidden !important; }
+      .invoice-shell, .invoice-shell * { visibility: visible !important; }
+      .invoice-shell {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+      }
+      .invoice {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+      }
+      .invoice-inner {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        padding: 10mm 9mm 8mm !important;
+        overflow: hidden !important;
+        gap: 10px !important;
+      }
+      .panel, button { display: none !important; }
+      .invoice-header, .cards-2, .table-card, .summary-row, .footer-cards, .card, .money-box {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <div class="brand-mini">
+        <img class="brand-logo logo-img" src="CLK_logo_export.png" alt="CLK Logo">
+        <div>
+          <h2>CHHINLONG CREATOR ACADEMY</h2>
+          <p>Invoice System A4 • Blogger Ready</p>
+        </div>
+      </div>
+
+      <div class="section-title">🧾 ជ្រើសទម្រង់ INVOICE</div>
+      <div class="grid-1">
+        <div>
+          <label for="invoiceTemplate">ប្រភេទទម្រង់</label>
+          <select id="invoiceTemplate">
+            <option value="student">ទម្រង់ទី1 — INVOICE សម្រាប់ចុះឈ្មោះសិស្ស</option>
+            <option value="service">ទម្រង់ទី2 — INVOICE សម្រាប់សេវាកម្មទូទៅ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title">👤 ព័ត៌មានអតិថិជន</div>
+      <div class="grid-1">
+        <div><label for="studentName">ឈ្មោះអតិថិជន / សិស្ស</label><input id="studentName" value="Mr. Sok Dara" /></div>
+        <div class="grid-2">
+          <div><label for="studentPhone">លេខទូរសព្ទ</label><input id="studentPhone" value="+855 98 765 432" /></div>
+          <div><label for="studentEmail">Email</label><input id="studentEmail" value="dara.sok@email.com" /></div>
+        </div>
+        <div><label for="invoiceDate">កាលបរិច្ឆេទ</label><input id="invoiceDate" /></div>
+        <div><label for="discount">Discount</label><input id="discount" type="number" min="0" value="0" /></div>
+      </div>
+
+      <div class="section-title">📚 ប្រភេទសេវាកម្ម</div>
+      <div class="grid-1">
+        <div><label for="serviceType">ជ្រើសសេវាកម្ម</label><select id="serviceType"></select></div>
+      </div>
+
+      <div class="grid-2" style="margin-top:10px;">
+        <input id="newServiceName" placeholder="ឧ. សេវាកម្មកាន់ផេក" />
+        <button class="btn-add" id="addServiceBtn" type="button">+ បន្ថែមសេវាកម្មថ្មី</button>
+      </div>
+      <button class="btn-secondary hidden" id="cancelEditServiceBtn" type="button" style="margin-top:10px;width:100%;">បោះបង់ការកែសេវាកម្ម</button>
+      <div id="serviceManagerList" class="item-manager"></div>
+
+      <div class="section-title">🧾 បន្ថែម Item</div>
+      <div class="grid-1">
+        <div>
+          <label for="newDesc">DESCRIPTION</label>
+          <select id="newDesc"></select>
+        </div>
+        <div class="grid-3">
+          <div>
+            <label for="newQtyValue">ចំនួន</label>
+            <input id="newQtyValue" type="number" min="1" value="1" />
+          </div>
+          <div>
+            <label for="newQtyUnit">ប្រភេទ Qty</label>
+            <select id="newQtyUnit">
+              <option value="នាក់">នាក់</option>
+              <option value="ផេក">ផេក</option>
+              <option value="ខែ">ខែ</option>
+              <option value="ដង">ដង</option>
+              <option value="គម្រោង">គម្រោង</option>
+            </select>
+          </div>
+          <div>
+            <label for="newCurrency">រូបិយប័ណ្ណ</label>
+            <select id="newCurrency">
+              <option value="USD">USD</option>
+              <option value="KHR">KHR</option>
+              <option value="THB">THB</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div><label for="newPrice">UNIT PRICE</label><input id="newPrice" type="number" min="0" value="350" /></div>
+          <div style="display:flex;align-items:end;"><button class="btn-add" id="addItemBtn" type="button">+ Add Item</button></div>
+        </div>
+        <button class="btn-secondary hidden" id="cancelEditItemBtn" type="button">បោះបង់ការកែ</button>
+        <div id="panelItemsList" class="item-manager"></div>
+      </div>
+
+      <div class="section-title">🔗 Google Sheet</div>
+      <div class="sheet-box">
+        <div class="mini-note">បានភ្ជាប់រួចរាល់ • បង្កើតវិក្កយបត្រ = ផ្ញើទិន្នន័យទៅ Google Sheet ដោយស្វ័យប្រវត្តិ</div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-primary" id="createInvoiceBtn" type="button">📤 បង្កើតវិក័យប័ត្រ</button>
+        <button class="btn-secondary" id="printBtn" type="button">🖨 Print / Save PDF</button>
+        <button class="btn-secondary" id="savePngBtn" type="button">🖼 Save PNG</button>
+      </div>
+
+      <div class="mini-note">
+        • លេខវិក្កយបត្រនឹងផ្លាស់ប្ដូរអូតូរាល់សន្លឹកថ្មី<br>
+        • លក្ខខណ្ឌមិនសងប្រាក់វិញ ចេញតែសម្រាប់ទម្រង់សិស្សរៀន<br>
+        • អាចបន្ថែមសេវាកម្ម និង Item បានដោយខ្លួនឯង
+      </div>
+    </aside>
+
+    <section class="invoice-shell">
+      <div class="invoice">
+        <div class="invoice-inner">
+          <div class="invoice-header">
+            <div class="brand">
+              <img class="big-logo logo-img" src="CLK_logo_export.png" alt="CLK Logo">
+              <div>
+                <h1 id="outBrandName">CHHINLONG <span>CREATOR ACADEMY</span></h1>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="invoice-title">INVOICE</div>
+              <div class="meta-box">
+                <div class="meta-chip"><strong>INVOICE NO:</strong> <span id="outInvoiceNo"></span></div>
+                <div class="meta-chip"><strong>DATE:</strong> <span id="outInvoiceDate"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cards-2">
+            <div class="card">
+              <h3 class="card-title">🏢 BILL FROM</h3>
+              <div class="detail-line"><strong>Mr. CHHINLONG KHIN</strong></div>
+              <div class="detail-line">📞 +855 71 866 0914</div>
+              <div class="detail-line">📍 Ratanak Mondul, Battambang, Cambodai</div>
+            </div>
+            <div class="card">
+              <h3 class="card-title">👤 BILL TO</h3>
+              <div class="detail-line"><strong id="outStudentName"></strong></div>
+              <div class="detail-line">📞 <span id="outStudentPhone"></span></div>
+              <div class="detail-line">✉️ <span id="outStudentEmail"></span></div>
+              <div class="detail-line"><span class="service-badge">📚 <span id="outServiceType"></span></span></div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:48%">DESCRIPTION</th>
+                  <th style="width:14%">QTY</th>
+                  <th style="width:18%">UNIT PRICE</th>
+                  <th style="width:20%">TOTAL</th>
+                </tr>
+              </thead>
+              <tbody id="invoiceItemsBody"></tbody>
+            </table>
+          </div>
+
+          <div class="summary-row">
+            <div class="terms-plain">
+              <h3 class="terms-title">លក្ខខណ្ឌ</h3>
+              <ul class="terms-list" id="termsList"></ul>
+            </div>
+            <div class="money-box">
+              <div class="money-line"><span>SUBTOTAL</span><strong id="outSubtotal"></strong></div>
+              <div class="money-line"><span>DISCOUNT</span><strong id="outDiscount"></strong></div>
+              <div class="grand-total"><span>TOTAL DUE</span><strong id="outGrandTotal"></strong></div>
+            </div>
+          </div>
+
+          <div class="footer-cards">
+            <div class="footer-signature">
+              <div class="signature" id="signatureBox">
+                <div class="sign-name">ឃិន ឈិនឡុង</div>
+                <div class="sign-role">អ្នកគ្រប់គ្រង</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-line">សូមអរគុណចំពោះការជឿទុកចិត្ត និងការគាំទ្ររបស់លោកអ្នក</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function pad(num, size = 4) {
+        return String(num).padStart(size, '0');
+      }
+
+      function invoiceCodePrefix(templateType) {
+        return templateType === 'student' ? 'INV-CCA-2505' : 'INV-CLK-2505';
+      }
+
+      function invoiceCounterKey(templateType) {
+        return templateType === 'student' ? 'clk_invoice_counter_student' : 'clk_invoice_counter_service';
+      }
+
+      function formatInvoiceNumber(templateType, count) {
+        return `${invoiceCodePrefix(templateType)}-${pad(count, 3)}`;
+      }
+
+      function getCurrentInvoiceNumber(templateType) {
+        const key = invoiceCounterKey(templateType);
+        const count = Number(localStorage.getItem(key) || '1');
+        return formatInvoiceNumber(templateType, count);
+      }
+
+      function moveToNextInvoiceNumber(templateType) {
+        const key = invoiceCounterKey(templateType);
+        const count = Number(localStorage.getItem(key) || '1');
+        localStorage.setItem(key, String(count + 1));
+        return formatInvoiceNumber(templateType, count + 1);
+      }
+
+      function todayString() {
+        const d = new Date();
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase();
+      }
+
+      function currentTimeString() {
+        const d = new Date();
+        return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      }
+
+      function currencySymbol(code) {
+        return ({ USD: '$', KHR: '៛', THB: '฿' }[code] || '$');
+      }
+
+      const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwF-1z97g8IY5JqU6tYbvwWTl_Y_L4Nhxb7R2u82claC1o4H9Iln3DKaxjFD_AWBH39/exec';
+
+      function formatMoney(value, code = 'USD') {
+        const n = Number(value || 0).toFixed(2);
+        return code === 'USD' ? `${currencySymbol(code)}${n}` : `${n} ${currencySymbol(code)}`;
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      const requiredIds = [
+        'invoiceTemplate','studentName','studentPhone','studentEmail','invoiceDate','discount',
+        'serviceType','newServiceName','addServiceBtn','cancelEditServiceBtn','serviceManagerList','newDesc',
+        'newQtyValue','newQtyUnit','newCurrency','newPrice','addItemBtn','cancelEditItemBtn','panelItemsList',
+        'createInvoiceBtn','printBtn','savePngBtn','invoiceItemsBody','outBrandName',
+        'outStudentName','outStudentPhone','outStudentEmail','outServiceType',
+        'outInvoiceNo','outInvoiceDate','outSubtotal','outDiscount','outGrandTotal',
+        'signatureBox','termsList'
+      ];
+
+      const byId = (id) => document.getElementById(id);
+      const missing = requiredIds.filter(id => !byId(id));
+      if (missing.length) {
+        console.error('Missing required elements:', missing);
+        alert('មាន element ខ្វះក្នុង page: ' + missing.join(', '));
+        return;
+      }
+
+      function applyExportLogoSource() {
+        if (!window.CLK_LOGO_DATA) return;
+        document.querySelectorAll('.logo-img').forEach(img => {
+          img.src = window.CLK_LOGO_DATA;
+        });
+      }
+
+      const defaultServices = [
+        'Content Creator',
+        'Creator Academy',
+        'សេវាកម្មកាន់ផេក',
+        'សេវាកម្មបង្កើតផេក',
+        'សេវាកម្ម Boost TikTok',
+        'Coaching',
+        'Consultation',
+        'Other'
+      ];
+
+      const defaults = {
+        studentName: 'Mr. Sok Dara',
+        studentPhone: '+855 98 765 432',
+        studentEmail: 'dara.sok@email.com',
+        serviceType: 'Content Creator',
+        templateType: 'student',
+        discount: 0,
+        items: [
+          { desc: 'Content Creator', qtyValue: 1, qtyUnit: 'នាក់', price: 350, currency: 'USD' }
+        ]
+      };
+
+      let items = JSON.parse(JSON.stringify(defaults.items));
+      let services = JSON.parse(localStorage.getItem('clk_services') || 'null') || [...defaultServices];
+      let currentInvoiceNo = getCurrentInvoiceNumber(defaults.templateType);
+      let editingServiceIndex = null;
+      let editingItemIndex = null;
+
+      function populateServices() {
+        const select = byId('serviceType');
+        const descSelect = byId('newDesc');
+        select.innerHTML = '';
+        descSelect.innerHTML = '';
+
+        const emptyServiceOpt = document.createElement('option');
+        emptyServiceOpt.value = '';
+        emptyServiceOpt.textContent = '';
+        select.appendChild(emptyServiceOpt);
+
+        const emptyDescOpt = document.createElement('option');
+        emptyDescOpt.value = '';
+        emptyDescOpt.textContent = '';
+        descSelect.appendChild(emptyDescOpt);
+
+        services.forEach((service) => {
+          const opt = document.createElement('option');
+          opt.value = service;
+          opt.textContent = service;
+          select.appendChild(opt);
+
+          const descOpt = document.createElement('option');
+          descOpt.value = service;
+          descOpt.textContent = service;
+          descSelect.appendChild(descOpt);
+        });
+
+        select.value = defaults.serviceType;
+        descSelect.value = defaults.items[0].desc;
+        renderServiceManager();
+      }
+
+      function renderServiceManager() {
+        const list = byId('serviceManagerList');
+        list.innerHTML = '';
+
+        services.forEach((service, index) => {
+          const row = document.createElement('div');
+          row.className = 'service-manager-row';
+          row.innerHTML = `
+            <div class="service-manager-name">${escapeHtml(service)}</div>
+            <button class="btn-edit" type="button" data-edit-service="${index}">កែឈ្មោះ</button>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      function resetServiceForm() {
+        editingServiceIndex = null;
+        byId('addServiceBtn').textContent = '+ បន្ថែមសេវាកម្មថ្មី';
+        byId('cancelEditServiceBtn').classList.add('hidden');
+        byId('newServiceName').value = '';
+      }
+
+      function setInitialValues() {
+        byId('studentName').value = defaults.studentName;
+        byId('studentPhone').value = defaults.studentPhone;
+        byId('studentEmail').value = defaults.studentEmail;
+        byId('serviceType').value = defaults.serviceType;
+        byId('newDesc').value = defaults.items[0].desc;
+        byId('invoiceTemplate').value = defaults.templateType;
+        byId('invoiceDate').value = todayString();
+        byId('discount').value = defaults.discount;
+        byId('newQtyValue').value = defaults.items[0].qtyValue;
+        byId('newQtyUnit').value = defaults.items[0].qtyUnit;
+        byId('newPrice').value = defaults.items[0].price;
+        byId('newCurrency').value = defaults.items[0].currency;
+      }
+
+      function setItemForm(item) {
+        byId('newDesc').value = item.desc;
+        byId('newQtyValue').value = item.qtyValue;
+        byId('newQtyUnit').value = item.qtyUnit;
+        byId('newPrice').value = item.price;
+        byId('newCurrency').value = item.currency;
+      }
+
+      function resetItemForm() {
+        editingItemIndex = null;
+        byId('addItemBtn').textContent = '+ Add Item';
+        byId('cancelEditItemBtn').classList.add('hidden');
+        byId('newDesc').value = '';
+        byId('newQtyValue').value = 1;
+        byId('newQtyUnit').value = 'នាក់';
+        byId('newCurrency').value = 'USD';
+        byId('newPrice').value = 0;
+      }
+
+      function clearInvoiceFormForNext(templateType) {
+        byId('invoiceTemplate').value = templateType;
+        byId('studentName').value = '';
+        byId('studentPhone').value = '';
+        byId('studentEmail').value = '';
+        byId('serviceType').value = '';
+        byId('invoiceDate').value = todayString();
+        byId('discount').value = 0;
+        resetServiceForm();
+        resetItemForm();
+        items = [];
+        renderItems();
+        updateOutput();
+      }
+
+      function renderPanelItems() {
+        const list = byId('panelItemsList');
+        list.innerHTML = '';
+
+        items.forEach((item, index) => {
+          const total = Number(item.qtyValue) * Number(item.price);
+          const row = document.createElement('div');
+          row.className = 'item-manager-row';
+          row.innerHTML = `
+            <div class="item-manager-name">
+              ${escapeHtml(item.desc)}
+              <span class="item-manager-meta">${item.qtyValue} ${escapeHtml(item.qtyUnit)} • ${formatMoney(total, item.currency)}</span>
+            </div>
+            <button class="btn-edit" type="button" data-edit-panel-item="${index}">កែ</button>
+            <button class="btn-delete" type="button" data-delete-panel-item="${index}">លុប</button>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      function renderItems() {
+        const tbody = byId('invoiceItemsBody');
+        tbody.innerHTML = '';
+
+        items.forEach((item, index) => {
+          const total = Number(item.qtyValue) * Number(item.price);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <span class="desc-main">${escapeHtml(item.desc)}</span>
+            </td>
+            <td class="text-center">${item.qtyValue} ${escapeHtml(item.qtyUnit)}</td>
+            <td class="text-right">${formatMoney(item.price, item.currency)}</td>
+            <td class="text-right"><strong>${formatMoney(total, item.currency)}</strong></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        renderPanelItems();
+      }
+
+      function getMainCurrency() {
+        return items.length ? items[0].currency : 'USD';
+      }
+
+      function updateOutput() {
+        const templateType = byId('invoiceTemplate').value;
+        const invoiceDate = byId('invoiceDate').value;
+        const invoiceDateTime = `${invoiceDate} • ${currentTimeString()}`;
+        const studentName = byId('studentName').value;
+        const studentPhone = byId('studentPhone').value;
+        const studentEmail = byId('studentEmail').value;
+        const serviceType = byId('serviceType').value;
+        const subtotal = items.reduce((sum, item) => sum + Number(item.qtyValue) * Number(item.price), 0);
+        const discount = Number(byId('discount').value || 0);
+        const total = Math.max(0, subtotal - discount);
+        const mainCurrency = getMainCurrency();
+
+        byId('outStudentName').textContent = studentName;
+        byId('outStudentPhone').textContent = studentPhone;
+        byId('outStudentEmail').textContent = studentEmail;
+        byId('outServiceType').textContent = serviceType;
+        byId('outInvoiceNo').textContent = currentInvoiceNo;
+        byId('outInvoiceDate').textContent = invoiceDateTime;
+        byId('outSubtotal').textContent = formatMoney(subtotal, mainCurrency);
+        byId('outDiscount').textContent = formatMoney(discount, mainCurrency);
+        byId('outGrandTotal').textContent = formatMoney(total, mainCurrency);
+
+        const termsList = byId('termsList');
+        const sharedTerms = `
+          <li>ការសម្រេចចិត្តទូទាត់ប្រាក់ ត្រូវចាត់ទុកថាបានយល់ព្រមលើលក្ខខណ្ឌទាំងអស់នេះ។</li>
+          <li>រាល់ការទូទាត់ប្រាក់ គឺមិនអាចស្នើសុំបង្វិលសងវិញបានឡើយ គ្រប់ករណីទាំងអស់។</li>
+          <li>សូមរក្សាវិក្កយបត្រនេះទុកជាភស្តុតាងសម្រាប់ការផ្ទៀងផ្ទាត់នៅពេលចាំបាច់។</li>
+        `;
+        if (templateType === 'student') {
+          byId('outBrandName').innerHTML = `CHHINLONG <span>CREATOR ACADEMY</span>`;
+          termsList.innerHTML = sharedTerms;
+          byId('signatureBox').classList.remove('hidden');
+        } else {
+          byId('outBrandName').innerHTML = `<span class="service-brand-name">CHHINLONG KHIN</span><span class="service-brand-title">Internet Marketing Service</span>`;
+          termsList.innerHTML = sharedTerms;
+          byId('signatureBox').classList.remove('hidden');
+        }
+
+        window.__invoicePayload = {
+          invoiceNo: currentInvoiceNo,
+          invoiceDate,
+          invoiceDateTime,
+          templateType,
+          serviceType,
+          studentName,
+          studentPhone,
+          studentEmail,
+          subtotal,
+          discount,
+          total,
+          notes: termsList.innerText.replace(/\n/g, ' | '),
+          items
+        };
+      }
+
+      function bindInputs() {
+        document.querySelectorAll('input, select').forEach(el => {
+          el.addEventListener('input', updateOutput);
+          el.addEventListener('change', updateOutput);
+        });
+      }
+
+      async function submitInvoicePayload(payload) {
+        await fetch(APPS_SCRIPT_WEB_APP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      byId('invoiceTemplate').addEventListener('change', () => {
+        currentInvoiceNo = getCurrentInvoiceNumber(byId('invoiceTemplate').value);
+        updateOutput();
+      });
+
+      byId('addServiceBtn').addEventListener('click', () => {
+        const name = byId('newServiceName').value.trim();
+        if (!name) return;
+
+        if (editingServiceIndex === null) {
+          if (services.includes(name)) return;
+          services.push(name);
+        } else {
+          const oldName = services[editingServiceIndex];
+          if (services.includes(name) && name !== oldName) return;
+          services[editingServiceIndex] = name;
+          items = items.map(item => item.desc === oldName ? { ...item, desc: name } : item);
+        }
+
+        localStorage.setItem('clk_services', JSON.stringify(services));
+        populateServices();
+        byId('serviceType').value = name;
+        byId('newDesc').value = name;
+        resetServiceForm();
+        renderItems();
+        updateOutput();
+      });
+
+      byId('serviceManagerList').addEventListener('click', (event) => {
+        const editBtn = event.target.closest('[data-edit-service]');
+        if (!editBtn) return;
+
+        editingServiceIndex = Number(editBtn.getAttribute('data-edit-service'));
+        byId('newServiceName').value = services[editingServiceIndex];
+        byId('addServiceBtn').textContent = 'Update Service';
+        byId('cancelEditServiceBtn').classList.remove('hidden');
+      });
+
+      byId('cancelEditServiceBtn').addEventListener('click', () => {
+        resetServiceForm();
+      });
+
+      byId('panelItemsList').addEventListener('click', (event) => {
+        const editBtn = event.target.closest('[data-edit-panel-item]');
+        const deleteBtn = event.target.closest('[data-delete-panel-item]');
+
+        if (editBtn) {
+          editingItemIndex = Number(editBtn.getAttribute('data-edit-panel-item'));
+          setItemForm(items[editingItemIndex]);
+          byId('addItemBtn').textContent = 'Update Item';
+          byId('cancelEditItemBtn').classList.remove('hidden');
+          return;
+        }
+
+        if (deleteBtn) {
+          const index = Number(deleteBtn.getAttribute('data-delete-panel-item'));
+          items.splice(index, 1);
+          if (editingItemIndex === index) resetItemForm();
+          if (editingItemIndex !== null && editingItemIndex > index) editingItemIndex -= 1;
+          renderItems();
+          updateOutput();
+        }
+      });
+
+      byId('cancelEditItemBtn').addEventListener('click', () => {
+        resetItemForm();
+      });
+
+      byId('addItemBtn').addEventListener('click', () => {
+        const desc = byId('newDesc').value.trim();
+        const qtyValue = Number(byId('newQtyValue').value || 1);
+        const qtyUnit = byId('newQtyUnit').value;
+        const price = Number(byId('newPrice').value || 0);
+        const currency = byId('newCurrency').value;
+        if (!desc) return;
+        const item = { desc, qtyValue, qtyUnit, price, currency };
+        if (editingItemIndex === null) {
+          items.push(item);
+        } else {
+          items[editingItemIndex] = item;
+        }
+        renderItems();
+        updateOutput();
+        resetItemForm();
+      });
+
+      byId('createInvoiceBtn').addEventListener('click', async () => {
+        updateOutput();
+        try {
+          await submitInvoicePayload(window.__invoicePayload);
+          alert('បានបង្កើតវិក្កយបត្រ និងផ្ញើទិន្នន័យទៅ Google Sheet រួចរាល់');
+          const templateType = byId('invoiceTemplate').value;
+          currentInvoiceNo = moveToNextInvoiceNumber(templateType);
+          clearInvoiceFormForNext(templateType);
+        } catch (err) {
+          console.error(err);
+          alert('មិនអាចភ្ជាប់ទៅ Apps Script បានទេ');
+        }
+      });
+
+      byId('printBtn').addEventListener('click', () => {
+        updateOutput();
+        window.print();
+      });
+
+      byId('savePngBtn').addEventListener('click', async () => {
+        updateOutput();
+        applyExportLogoSource();
+        if (typeof html2canvas !== 'function') {
+          alert('មិនអាច Save PNG បានទេ។ សូមពិនិត្យ Internet ដើម្បី load html2canvas library។');
+          return;
+        }
+
+        const btn = byId('savePngBtn');
+        const originalText = btn.textContent;
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+
+        try {
+          if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
+          }
+
+          const invoice = document.querySelector('.invoice');
+          const canvas = await html2canvas(invoice, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            logging: false
+          });
+          const link = document.createElement('a');
+          link.download = `${currentInvoiceNo}.png`;
+          link.href = canvas.toDataURL('image/png');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } catch (err) {
+          console.error(err);
+          alert('Save PNG មិនបានទេ។ សូមបើក Console មើល error ឬសាកល្បងបើក file តាម Chrome/Edge ម្តងទៀត។');
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }
+      });
+
+      console.assert(typeof pad === 'function', 'pad should be defined before use');
+      console.assert(typeof getCurrentInvoiceNumber === 'function', 'getCurrentInvoiceNumber should exist');
+      console.assert(byId('invoiceItemsBody'), 'invoiceItemsBody should exist');
+      console.assert(byId('outBrandName'), 'outBrandName should exist');
+
+      populateServices();
+      applyExportLogoSource();
+      setInitialValues();
+      bindInputs();
+      renderItems();
+      updateOutput();
+    });
+  </script>
+</body>
+</html>
