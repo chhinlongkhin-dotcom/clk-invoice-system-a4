@@ -477,6 +477,173 @@
       .invoice-shell { overflow-x: auto; }
     }
 
+    @media screen and (max-width: 980px) {
+      body { padding: 14px; }
+      .app {
+        gap: 14px;
+        max-width: 100%;
+      }
+      .panel, .invoice-shell {
+        border-radius: 12px;
+      }
+      .panel {
+        padding: 16px;
+        overflow: visible;
+      }
+      .brand-mini {
+        align-items: flex-start;
+      }
+      .brand-mini h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        line-height: 1.35;
+      }
+      .brand-mini p {
+        margin: 6px 0 0;
+        font-size: 0.86rem;
+      }
+      .grid-2, .grid-3, .button-row {
+        grid-template-columns: 1fr;
+      }
+      input, select, textarea, button {
+        min-height: 48px;
+        font-size: 1rem;
+      }
+      .invoice-shell {
+        padding: 12px;
+        overflow: visible;
+      }
+      .invoice {
+        width: 100%;
+        min-height: auto;
+        border-radius: 12px;
+      }
+      .invoice-inner {
+        min-height: auto;
+        padding: 22px;
+        gap: 14px;
+      }
+      .invoice-header,
+      .cards-2,
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+      .header-right {
+        text-align: left;
+      }
+      .invoice-title {
+        font-size: 2rem;
+      }
+      .meta-box {
+        justify-items: stretch;
+      }
+      .brand h1 {
+        font-size: 1.35rem;
+      }
+      .service-brand-name {
+        font-size: 1.7rem;
+      }
+      .service-brand-title {
+        white-space: normal;
+        font-size: 1.18rem;
+      }
+      .big-logo {
+        width: 74px;
+        height: 74px;
+      }
+      .table-card {
+        overflow-x: auto;
+      }
+      .table {
+        min-width: 560px;
+      }
+      .footer-signature {
+        width: 100%;
+      }
+    }
+
+    @media screen and (max-width: 560px) {
+      body { padding: 8px; }
+      .panel {
+        padding: 14px;
+      }
+      .brand-logo {
+        width: 46px;
+        height: 46px;
+      }
+      .section-title {
+        font-size: 1rem;
+        margin-top: 16px;
+      }
+      .invoice-shell {
+        padding: 8px;
+      }
+      .invoice-inner {
+        padding: 16px 12px;
+        gap: 12px;
+      }
+      .brand {
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .big-logo {
+        width: 58px;
+        height: 58px;
+      }
+      .brand h1 {
+        font-size: 1.02rem;
+        line-height: 1.22;
+      }
+      .service-brand-name {
+        font-size: 1.25rem;
+      }
+      .service-brand-title {
+        font-size: 0.98rem;
+      }
+      .invoice-title {
+        font-size: 1.7rem;
+        margin-bottom: 8px;
+      }
+      .meta-chip {
+        padding: 9px 11px;
+        gap: 8px;
+        font-size: 0.86rem;
+      }
+      .meta-chip span {
+        font-size: 0.78rem;
+      }
+      .card {
+        padding: 12px;
+      }
+      .card-title {
+        font-size: 1rem;
+      }
+      .detail-line,
+      .table tbody td,
+      .money-line,
+      .terms-list {
+        font-size: 0.94rem;
+      }
+      .table thead th {
+        font-size: 0.9rem;
+      }
+      .money-box {
+        padding: 12px;
+      }
+      .grand-total {
+        font-size: 1.02rem;
+      }
+      .grand-total strong {
+        font-size: 1.45rem;
+      }
+      .sign-name {
+        font-size: 1.25rem;
+      }
+      .footer-line {
+        font-size: 0.86rem;
+      }
+    }
+
     @media print {
       @page { size: A4 portrait; margin: 0; }
       html, body {
