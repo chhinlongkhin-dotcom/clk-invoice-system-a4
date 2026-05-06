@@ -801,15 +801,13 @@
       ];
 
       const defaults = {
-        studentName: 'Mr. Sok Dara',
-        studentPhone: '+855 98 765 432',
-        studentEmail: 'dara.sok@email.com',
-        serviceType: 'Content Creator',
+        studentName: '',
+        studentPhone: '',
+        studentEmail: '',
+        serviceType: '',
         templateType: 'student',
         discount: 0,
-        items: [
-          { desc: 'Content Creator', qtyValue: 1, qtyUnit: 'នាក់', price: 350, currency: 'USD' }
-        ]
+        items: []
       };
 
       let items = JSON.parse(JSON.stringify(defaults.items));
@@ -846,8 +844,8 @@
           descSelect.appendChild(descOpt);
         });
 
-        select.value = defaults.serviceType;
-        descSelect.value = defaults.items[0].desc;
+        select.value = '';
+        descSelect.value = '';
         renderServiceManager();
       }
 
@@ -878,14 +876,14 @@
         byId('studentPhone').value = defaults.studentPhone;
         byId('studentEmail').value = defaults.studentEmail;
         byId('serviceType').value = defaults.serviceType;
-        byId('newDesc').value = defaults.items[0].desc;
+        byId('newDesc').value = '';
         byId('invoiceTemplate').value = defaults.templateType;
         byId('invoiceDate').value = todayString();
         byId('discount').value = defaults.discount;
-        byId('newQtyValue').value = defaults.items[0].qtyValue;
-        byId('newQtyUnit').value = defaults.items[0].qtyUnit;
-        byId('newPrice').value = defaults.items[0].price;
-        byId('newCurrency').value = defaults.items[0].currency;
+        byId('newQtyValue').value = 1;
+        byId('newQtyUnit').value = 'នាក់';
+        byId('newPrice').value = 0;
+        byId('newCurrency').value = 'USD';
       }
 
       function setItemForm(item) {
