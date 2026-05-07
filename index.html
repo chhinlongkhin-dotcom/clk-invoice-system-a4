@@ -196,6 +196,52 @@
       gap: 8px;
       margin-top: 10px;
     }
+    .popup-wrap {
+      position: relative;
+    }
+    .popup-panel {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      z-index: 30;
+      max-height: 320px;
+      overflow: auto;
+      padding: 10px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(24, 58, 96, 0.92), rgba(13, 41, 72, 0.94));
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 18px 42px rgba(0,8,40,0.34);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .popup-panel.open {
+      display: grid;
+    }
+    .dropdown-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 48px;
+      color: #fff;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+    .dropdown-trigger::after {
+      content: "⌄";
+      font-family: 'Montserrat', sans-serif;
+      opacity: 0.8;
+    }
+    .popup-panel::-webkit-scrollbar {
+      width: 8px;
+    }
+    .popup-panel::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.28);
+      border-radius: 999px;
+    }
     .quick-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -787,9 +833,9 @@
       </div>
 
       <div class="section-title">🔎 ស្វែងរកអតិថិជនចាស់</div>
-      <div class="grid-1">
+      <div class="grid-1 popup-wrap">
         <input id="customerSearch" placeholder="ស្វែងរកតាមឈ្មោះ ឬ លេខទូរស័ព្ទ" />
-        <div id="customerResults" class="quick-list"></div>
+        <div id="customerResults" class="quick-list popup-panel"></div>
       </div>
 
       <div class="section-title">📚 ប្រភេទសេវាកម្ម</div>
@@ -802,7 +848,10 @@
         <button class="btn-add" id="addServiceBtn" type="button">+ បន្ថែមសេវាកម្មថ្មី</button>
       </div>
       <button class="btn-secondary hidden" id="cancelEditServiceBtn" type="button" style="margin-top:10px;width:100%;">បោះបង់ការកែសេវាកម្ម</button>
-      <div id="serviceManagerList" class="item-manager"></div>
+      <div class="popup-wrap" style="margin-top:10px;">
+        <button class="dropdown-trigger" id="serviceDropdownBtn" type="button">បញ្ជីសេវាកម្ម / កែឈ្មោះ</button>
+        <div id="serviceManagerList" class="item-manager popup-panel"></div>
+      </div>
 
       <div class="section-title">🧾 បន្ថែម Item</div>
       <div class="grid-1">
@@ -848,7 +897,10 @@
       </div>
 
       <div class="section-title">🕘 ប្រវត្តិវិក័យបត្រ</div>
-      <div id="invoiceHistoryList" class="quick-list"></div>
+      <div class="popup-wrap">
+        <button class="dropdown-trigger" id="historyToggleBtn" type="button">ជ្រើសរើសប្រវត្តិវិក័យបត្រ</button>
+        <div id="invoiceHistoryList" class="quick-list popup-panel"></div>
+      </div>
 
       <div class="button-row">
         <button class="btn-primary" id="createInvoiceBtn" type="button">📤 បង្កើតវិក័យប័ត្រ</button>
@@ -1010,7 +1062,7 @@
       const requiredIds = [
         'invoiceTemplate','studentName','studentPhone','studentEmail','invoiceDate','discount',
         'customerSearch','customerResults','invoiceHistoryList',
-        'serviceType','newServiceName','addServiceBtn','cancelEditServiceBtn','serviceManagerList','newDesc',
+        'serviceType','newServiceName','addServiceBtn','cancelEditServiceBtn','serviceDropdownBtn','serviceManagerList','historyToggleBtn','newDesc',
         'newQtyValue','newQtyUnit','newCurrency','newPrice','addItemBtn','cancelEditItemBtn','panelItemsList',
         'createInvoiceBtn','printBtn','savePngBtn','invoiceItemsBody','outBrandName',
         'outStudentName','outStudentPhone','outStudentEmail','outServiceType',
@@ -1200,12 +1252,7 @@
 
       function loadInvoiceHistory() {
         if (historySyncReady) return syncedInvoiceHistory;
-        try {
-          const history = JSON.parse(localStorage.getItem(INVOICE_HISTORY_KEY) || '[]');
-          return Array.isArray(history) ? history : [];
-        } catch (err) {
-          return [];
-        }
+        return [];
       }
 
       function saveInvoiceHistory(payload) {
@@ -1226,7 +1273,9 @@
           notes: payload.notes,
           items: JSON.parse(JSON.stringify(payload.items || []))
         });
-        localStorage.setItem(INVOICE_HISTORY_KEY, JSON.stringify(history.slice(0, MAX_HISTORY_ITEMS)));
+        syncedInvoiceHistory = history.slice(0, MAX_HISTORY_ITEMS);
+        historySyncReady = true;
+        localStorage.setItem(INVOICE_HISTORY_KEY, JSON.stringify(syncedInvoiceHistory));
         renderCustomerResults(byId('customerSearch').value);
         renderInvoiceHistory();
         if (customerSyncReady) fetchSyncedCustomers();
@@ -1361,6 +1410,7 @@
           byId('serviceType').value = customer.serviceType;
         }
         updateOutput();
+        closePopups();
       }
 
       function renderInvoiceHistory() {
@@ -1404,6 +1454,7 @@
         items = JSON.parse(JSON.stringify(record.items || []));
         renderItems();
         updateOutput();
+        closePopups();
         alert('បានយកប្រវត្តិវិក្កយបត្រមកពិនិត្យវិញ។ ប្រសិនបើចង់បង្កើតថ្មី សូមប្ដូរព័ត៌មានជាមុនសិន។');
       }
 
@@ -1421,6 +1472,19 @@
         const heightScale = Math.max(0.1, (shell.clientHeight - 10) / invoice.offsetHeight);
         const scale = Math.min(1, widthScale, heightScale);
         document.documentElement.style.setProperty('--preview-scale', scale.toFixed(3));
+      }
+
+      function closePopups(except = null) {
+        document.querySelectorAll('.popup-panel.open').forEach(panel => {
+          if (panel !== except) panel.classList.remove('open');
+        });
+      }
+
+      function togglePopup(panelId) {
+        const panel = byId(panelId);
+        const willOpen = !panel.classList.contains('open');
+        closePopups(panel);
+        panel.classList.toggle('open', willOpen);
       }
 
       function renderPanelItems() {
@@ -1547,6 +1611,12 @@
 
       byId('customerSearch').addEventListener('input', (event) => {
         renderCustomerResults(event.target.value);
+        byId('customerResults').classList.add('open');
+      });
+
+      byId('customerSearch').addEventListener('focus', (event) => {
+        renderCustomerResults(event.target.value);
+        togglePopup('customerResults');
       });
 
       byId('customerResults').addEventListener('click', (event) => {
@@ -1561,6 +1631,19 @@
         if (!btn) return;
         const row = btn.closest('.quick-row');
         if (row && row.__history) loadInvoiceFromHistory(row.__history);
+      });
+
+      byId('serviceDropdownBtn').addEventListener('click', () => {
+        togglePopup('serviceManagerList');
+      });
+
+      byId('historyToggleBtn').addEventListener('click', () => {
+        renderInvoiceHistory();
+        togglePopup('invoiceHistoryList');
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!event.target.closest('.popup-wrap')) closePopups();
       });
 
       byId('addServiceBtn').addEventListener('click', () => {
@@ -1594,6 +1677,7 @@
         byId('newServiceName').value = services[editingServiceIndex];
         byId('addServiceBtn').textContent = 'Update Service';
         byId('cancelEditServiceBtn').classList.remove('hidden');
+        closePopups();
       });
 
       byId('cancelEditServiceBtn').addEventListener('click', () => {
