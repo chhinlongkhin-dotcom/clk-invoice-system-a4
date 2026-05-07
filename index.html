@@ -1038,7 +1038,8 @@
 
       const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwF-1z97g8IY5JqU6tYbvwWTl_Y_L4Nhxb7R2u82claC1o4H9Iln3DKaxjFD_AWBH39/exec';
       const LOCK_PIN = '085236';
-      const INVOICE_HISTORY_KEY = 'clk_invoice_history_v1';
+      const INVOICE_HISTORY_KEY = 'clk_invoice_history_sheet_cache_v2';
+      const LEGACY_HISTORY_KEYS = ['clk_invoice_history_v1'];
       const MAX_HISTORY_ITEMS = 80;
       let syncedInvoiceHistory = [];
       let historySyncReady = false;
@@ -1117,6 +1118,10 @@
           if (event.key === 'Enter') checkPin();
         });
         pinInput.focus();
+      }
+
+      function clearLegacyBrowserData() {
+        LEGACY_HISTORY_KEYS.forEach(key => localStorage.removeItem(key));
       }
 
       const defaultServices = [
@@ -1313,15 +1318,17 @@
 
       function getCustomersFromHistory() {
         if (customerSyncReady) {
-          return syncedCustomers.map(customer => ({
-            name: customer.name || '',
-            phone: customer.phone || '',
-            email: customer.email || '',
-            serviceType: customer.serviceType || '',
-            lastInvoiceNo: customer.lastInvoiceNo || '',
-            totalInvoices: customer.totalInvoices || 0,
-            totalSpent: customer.totalSpent || 0
-          }));
+          return syncedCustomers
+            .filter(customer => !isTestRecord(customer))
+            .map(customer => ({
+              name: customer.name || '',
+              phone: customer.phone || '',
+              email: customer.email || '',
+              serviceType: customer.serviceType || '',
+              lastInvoiceNo: customer.lastInvoiceNo || '',
+              totalInvoices: customer.totalInvoices || 0,
+              totalSpent: customer.totalSpent || 0
+            }));
         }
 
         const map = new Map();
@@ -1415,7 +1422,7 @@
 
       function renderInvoiceHistory() {
         const list = byId('invoiceHistoryList');
-        const history = loadInvoiceHistory().slice(0, 12);
+        const history = loadInvoiceHistory().filter(record => !isTestRecord(record)).slice(0, 12);
 
         list.innerHTML = '';
         if (!history.length) {
@@ -1440,6 +1447,20 @@
 
       function getHistoryCurrency(record) {
         return record.items && record.items.length ? record.items[0].currency || 'USD' : 'USD';
+      }
+
+      function isTestRecord(record) {
+        const haystack = [
+          record.invoiceNo,
+          record.studentName,
+          record.name,
+          record.studentPhone,
+          record.phone,
+          record.studentEmail,
+          record.email,
+          record.lastInvoiceNo
+        ].join(' ').toUpperCase();
+        return haystack.includes('TEST') || haystack.includes('CODEX') || haystack.includes('#ERROR');
       }
 
       function loadInvoiceFromHistory(record) {
@@ -1801,6 +1822,7 @@
       console.assert(byId('invoiceItemsBody'), 'invoiceItemsBody should exist');
       console.assert(byId('outBrandName'), 'outBrandName should exist');
 
+      clearLegacyBrowserData();
       populateServices();
       applyExportLogoSource();
       initLockScreen();
