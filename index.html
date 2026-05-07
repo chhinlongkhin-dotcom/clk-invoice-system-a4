@@ -602,13 +602,13 @@
     }
     .lock-card {
       width: min(420px, 100%);
-      padding: 26px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.10);
+      padding: 30px 26px 24px;
+      border-radius: 28px;
+      background: rgba(8, 30, 56, 0.62);
       border: 1px solid rgba(255,255,255,0.18);
       box-shadow: 0 22px 60px rgba(0,8,40,0.35);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       text-align: center;
     }
     .lock-card img {
@@ -626,27 +626,65 @@
       line-height: 1.3;
     }
     .lock-card p {
-      margin: 0 0 18px;
+      margin: 0 0 20px;
       color: rgba(255,255,255,0.72);
       font-size: 0.95rem;
       line-height: 1.55;
     }
-    .lock-card input {
-      text-align: center;
-      letter-spacing: 0.24em;
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin: 10px 0 24px;
+    }
+    .pin-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.10);
+      transition: background 0.16s ease, transform 0.16s ease;
+    }
+    .pin-dot.filled {
+      background: #fff;
+      transform: scale(1.08);
+    }
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .pin-key {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto;
+      padding: 0;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.20);
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.55rem;
       font-weight: 700;
     }
-    .lock-card button {
-      width: 100%;
-      margin-top: 12px;
-      background: linear-gradient(135deg, var(--gold), #ffdf7f);
-      color: #162646;
+    .pin-key:active {
+      transform: scale(0.96);
+      background: rgba(255,255,255,0.24);
+    }
+    .pin-key.pin-action {
+      background: transparent;
+      border-color: transparent;
+      font-size: 0.92rem;
+      font-family: 'Kantumruy Pro', 'Battambang', sans-serif;
+      color: rgba(255,255,255,0.78);
     }
     .lock-error {
       min-height: 22px;
-      margin-top: 10px;
+      margin-top: 18px;
       color: #ffd0d0;
       font-size: 0.9rem;
       font-weight: 700;
@@ -655,6 +693,24 @@
       filter: blur(8px);
       pointer-events: none;
       user-select: none;
+    }
+    .template-required-notice {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: #fff0b8;
+      background: rgba(245,197,66,0.12);
+      border: 1px solid rgba(245,197,66,0.28);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+    body.template-not-selected .template-required-notice {
+      display: block;
+    }
+    .template-gated-disabled {
+      opacity: 0.46;
+      cursor: not-allowed;
     }
 
     @media (max-width: 1480px) {
@@ -789,9 +845,31 @@
     <div class="lock-card">
       <img class="logo-img" src="CLK_logo_export.png" alt="CLK Logo">
       <h2>CLK INVOICE SYSTEM</h2>
-      <p>សូមបញ្ចូល PIN CODE ដើម្បីចូលប្រើប្រព័ន្ធវិក្កយបត្រ</p>
-      <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="••••••" />
-      <button id="unlockBtn" type="button">ចូលប្រើប្រព័ន្ធ</button>
+      <p>Enter PIN Code</p>
+      <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="6" class="hidden" />
+      <div class="pin-dots" id="pinDots" aria-label="PIN progress">
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+      </div>
+      <div class="pin-keypad" id="pinKeypad">
+        <button class="pin-key" type="button" data-pin-key="1">1</button>
+        <button class="pin-key" type="button" data-pin-key="2">2</button>
+        <button class="pin-key" type="button" data-pin-key="3">3</button>
+        <button class="pin-key" type="button" data-pin-key="4">4</button>
+        <button class="pin-key" type="button" data-pin-key="5">5</button>
+        <button class="pin-key" type="button" data-pin-key="6">6</button>
+        <button class="pin-key" type="button" data-pin-key="7">7</button>
+        <button class="pin-key" type="button" data-pin-key="8">8</button>
+        <button class="pin-key" type="button" data-pin-key="9">9</button>
+        <button class="pin-key pin-action" type="button" data-pin-clear="true">Clear</button>
+        <button class="pin-key" type="button" data-pin-key="0">0</button>
+        <button class="pin-key pin-action" type="button" data-pin-delete="true">Delete</button>
+      </div>
+      <button id="unlockBtn" type="button" class="hidden">Unlock</button>
       <div class="lock-error" id="lockError"></div>
     </div>
   </div>
@@ -816,9 +894,13 @@
         <div>
           <label for="invoiceTemplate">ប្រភេទទម្រង់</label>
           <select id="invoiceTemplate">
+            <option value="">-- ជ្រើសរើសទម្រង់ INVOICE --</option>
             <option value="student">ទម្រង់ទី1 — INVOICE សម្រាប់ចុះឈ្មោះសិស្ស</option>
             <option value="service">ទម្រង់ទី2 — INVOICE សម្រាប់សេវាកម្មទូទៅ</option>
           </select>
+          <div class="template-required-notice" id="templateRequiredNotice">
+            សូមជ្រើសរើសទម្រង់ INVOICE មុនពេលបំពេញព័ត៌មានអតិថិជន។
+          </div>
         </div>
       </div>
 
@@ -999,6 +1081,7 @@
       }
 
       function invoiceCodePrefix(templateType) {
+        if (!templateType) return '';
         return templateType === 'student' ? 'INV-CCA-2505' : 'INV-CLK-2505';
       }
 
@@ -1007,10 +1090,12 @@
       }
 
       function formatInvoiceNumber(templateType, count) {
+        if (!templateType) return '';
         return `${invoiceCodePrefix(templateType)}-${pad(count, 3)}`;
       }
 
       function getCurrentInvoiceNumber(templateType) {
+        if (!templateType) return '';
         const key = invoiceCounterKey(templateType);
         const count = Number(localStorage.getItem(key) || '1');
         return formatInvoiceNumber(templateType, count);
@@ -1062,7 +1147,7 @@
       }
 
       const requiredIds = [
-        'invoiceTemplate','studentName','studentPhone','studentEmail','invoiceDate','discount',
+        'invoiceTemplate','templateRequiredNotice','studentName','studentPhone','studentEmail','invoiceDate','discount',
         'customerSearch','customerResults','invoiceHistoryList',
         'serviceType','newServiceName','addServiceBtn','cancelEditServiceBtn','serviceDropdownBtn','serviceManagerList','historyToggleBtn','newDesc',
         'newQtyValue','newQtyUnit','newCurrency','newPrice','addItemBtn','cancelEditItemBtn','panelItemsList',
@@ -1092,11 +1177,19 @@
         const pinInput = byId('pinInput');
         const unlockBtn = byId('unlockBtn');
         const lockError = byId('lockError');
+        const pinDots = Array.from(document.querySelectorAll('#pinDots .pin-dot'));
+        const pinKeypad = byId('pinKeypad');
 
         const unlock = () => {
           document.body.classList.remove('locked');
           lockScreen.classList.add('hidden');
           sessionStorage.setItem('clk_invoice_unlocked', '1');
+        };
+
+        const renderPin = () => {
+          pinDots.forEach((dot, index) => {
+            dot.classList.toggle('filled', index < pinInput.value.length);
+          });
         };
 
         if (sessionStorage.getItem('clk_invoice_unlocked') === '1') {
@@ -1109,16 +1202,63 @@
             unlock();
             return;
           }
-          lockError.textContent = 'PIN CODE មិនត្រឹមត្រូវ';
+          lockError.textContent = 'PIN CODE is incorrect';
           pinInput.value = '';
-          pinInput.focus();
+          renderPin();
         };
 
         unlockBtn.addEventListener('click', checkPin);
+        pinKeypad.addEventListener('click', (event) => {
+          const key = event.target.closest('[data-pin-key]');
+          const deleteKey = event.target.closest('[data-pin-delete]');
+          const clearKey = event.target.closest('[data-pin-clear]');
+
+          if (key && pinInput.value.length < LOCK_PIN.length) {
+            pinInput.value += key.getAttribute('data-pin-key');
+            lockError.textContent = '';
+            renderPin();
+            if (pinInput.value.length === LOCK_PIN.length) {
+              window.setTimeout(checkPin, 120);
+            }
+            return;
+          }
+
+          if (deleteKey) {
+            pinInput.value = pinInput.value.slice(0, -1);
+            lockError.textContent = '';
+            renderPin();
+            return;
+          }
+
+          if (clearKey) {
+            pinInput.value = '';
+            lockError.textContent = '';
+            renderPin();
+          }
+        });
         pinInput.addEventListener('keydown', (event) => {
           if (event.key === 'Enter') checkPin();
         });
-        pinInput.focus();
+        document.addEventListener('keydown', (event) => {
+          if (document.body.classList.contains('locked') === false) return;
+          if (/^\d$/.test(event.key) && pinInput.value.length < LOCK_PIN.length) {
+            pinInput.value += event.key;
+            lockError.textContent = '';
+            renderPin();
+            if (pinInput.value.length === LOCK_PIN.length) {
+              window.setTimeout(checkPin, 120);
+            }
+          } else if (event.key === 'Backspace') {
+            pinInput.value = pinInput.value.slice(0, -1);
+            lockError.textContent = '';
+            renderPin();
+          } else if (event.key === 'Escape') {
+            pinInput.value = '';
+            lockError.textContent = '';
+            renderPin();
+          }
+        });
+        renderPin();
       }
 
       function clearLegacyBrowserData() {
@@ -1141,7 +1281,7 @@
         studentPhone: '',
         studentEmail: '',
         serviceType: '',
-        templateType: 'student',
+        templateType: '',
         discount: 0,
         items: []
       };
@@ -1222,6 +1362,40 @@
         byId('newCurrency').value = 'USD';
       }
 
+      const templateGatedIds = [
+        'studentName','studentPhone','studentEmail','invoiceDate','discount',
+        'customerSearch','serviceType','newServiceName','addServiceBtn','serviceDropdownBtn',
+        'newDesc','newQtyValue','newQtyUnit','newCurrency','newPrice','addItemBtn',
+        'cancelEditItemBtn','cancelEditServiceBtn','historyToggleBtn',
+        'createInvoiceBtn','printBtn','savePngBtn'
+      ];
+
+      function hasSelectedInvoiceTemplate() {
+        return Boolean(byId('invoiceTemplate').value);
+      }
+
+      function setTemplateGateState() {
+        const locked = !hasSelectedInvoiceTemplate();
+        document.body.classList.toggle('template-not-selected', locked);
+        templateGatedIds.forEach((id) => {
+          const el = byId(id);
+          if (!el) return;
+          el.disabled = locked;
+          el.classList.toggle('template-gated-disabled', locked);
+        });
+        if (locked) {
+          closePopups();
+        }
+      }
+
+      function requireInvoiceTemplate() {
+        if (hasSelectedInvoiceTemplate()) return true;
+        alert('សូមជ្រើសរើសទម្រង់ INVOICE ជាមុនសិន');
+        byId('invoiceTemplate').focus();
+        setTemplateGateState();
+        return false;
+      }
+
       function setItemForm(item) {
         byId('newDesc').value = item.desc;
         byId('newQtyValue').value = item.qtyValue;
@@ -1242,7 +1416,7 @@
       }
 
       function clearInvoiceFormForNext(templateType) {
-        byId('invoiceTemplate').value = templateType;
+        byId('invoiceTemplate').value = '';
         byId('studentName').value = '';
         byId('studentPhone').value = '';
         byId('studentEmail').value = '';
@@ -1252,7 +1426,9 @@
         resetServiceForm();
         resetItemForm();
         items = [];
+        currentInvoiceNo = '';
         renderItems();
+        setTemplateGateState();
         updateOutput();
       }
 
@@ -1467,6 +1643,7 @@
       function loadInvoiceFromHistory(record) {
         byId('invoiceTemplate').value = record.templateType || 'student';
         currentInvoiceNo = record.invoiceNo || getCurrentInvoiceNumber(byId('invoiceTemplate').value);
+        setTemplateGateState();
         byId('studentName').value = record.studentName || '';
         byId('studentPhone').value = record.studentPhone || '';
         byId('studentEmail').value = record.studentEmail || '';
@@ -1583,7 +1760,11 @@
           <li>រាល់ការទូទាត់ប្រាក់ គឺមិនអាចស្នើសុំបង្វិលសងវិញបានឡើយ គ្រប់ករណីទាំងអស់។</li>
           <li>សូមរក្សាវិក្កយបត្រនេះទុកជាភស្តុតាងសម្រាប់ការផ្ទៀងផ្ទាត់នៅពេលចាំបាច់។</li>
         `;
-        if (templateType === 'student') {
+        if (!templateType) {
+          byId('outBrandName').innerHTML = `CHHINLONG <span>CREATOR ACADEMY</span>`;
+          termsList.innerHTML = sharedTerms;
+          byId('signatureBox').classList.remove('hidden');
+        } else if (templateType === 'student') {
           byId('outBrandName').innerHTML = `CHHINLONG <span>CREATOR ACADEMY</span>`;
           termsList.innerHTML = sharedTerms;
           byId('signatureBox').classList.remove('hidden');
@@ -1628,6 +1809,7 @@
 
       byId('invoiceTemplate').addEventListener('change', () => {
         currentInvoiceNo = getCurrentInvoiceNumber(byId('invoiceTemplate').value);
+        setTemplateGateState();
         updateOutput();
       });
 
@@ -1733,6 +1915,7 @@
       });
 
       byId('addItemBtn').addEventListener('click', () => {
+        if (!requireInvoiceTemplate()) return;
         const desc = byId('newDesc').value.trim();
         const qtyValue = Number(byId('newQtyValue').value || 1);
         const qtyUnit = byId('newQtyUnit').value;
@@ -1751,6 +1934,7 @@
       });
 
       byId('createInvoiceBtn').addEventListener('click', async () => {
+        if (!requireInvoiceTemplate()) return;
         updateOutput();
         try {
           await submitInvoicePayload(window.__invoicePayload);
@@ -1768,11 +1952,13 @@
       });
 
       byId('printBtn').addEventListener('click', () => {
+        if (!requireInvoiceTemplate()) return;
         updateOutput();
         window.print();
       });
 
       byId('savePngBtn').addEventListener('click', async () => {
+        if (!requireInvoiceTemplate()) return;
         updateOutput();
         applyExportLogoSource();
         if (typeof html2canvas !== 'function') {
@@ -1828,6 +2014,7 @@
       applyExportLogoSource();
       initLockScreen();
       setInitialValues();
+      setTemplateGateState();
       bindInputs();
       renderItems();
       renderCustomerResults();
