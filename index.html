@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
   <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
-  <title>CLK Invoice</title>
+  <title>CLK Invoice System A4 Updated</title>
   <link rel="icon" type="image/png" href="CLK_logo_export.png">
   <link rel="apple-touch-icon" href="CLK_logo_export.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@300;400;700&family=Kantumruy+Pro:wght@300;400;500;700&family=Montserrat:wght@400;600;700;800&family=Moul&display=swap" rel="stylesheet">
   <script src="html2canvas.min.js"></script>
   <script src="clk-logo-data.js"></script>
+  <script src="bank-qr-data.js"></script>
   <style>
     :root {
       --bg-1: #071b34;
@@ -408,7 +409,11 @@
     .cards-2, .summary-row, .footer-cards { display: grid; gap: 12px; }
     .cards-2 { grid-template-columns: 1fr 1fr; }
     .summary-row { grid-template-columns: 1fr 320px; }
-    .footer-cards { grid-template-columns: 1fr; justify-items: end; margin-top: auto; }
+    .footer-cards {
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      margin-top: auto;
+    }
 
     .card {
       background: rgba(244, 247, 251, 0.82);
@@ -533,9 +538,23 @@
       font-size: 1.02rem;
     }
 
+    .payment-qr {
+      width: 148px;
+      align-self: end;
+      justify-self: start;
+      filter: drop-shadow(0 14px 22px rgba(0, 12, 45, 0.22));
+    }
+    .payment-qr img {
+      width: 100%;
+      height: auto;
+      display: block;
+      image-rendering: auto;
+    }
+
     .footer-signature {
-      width: calc((100% - 12px) / 2);
+      width: 100%;
       padding: 14px 0;
+      justify-self: end;
     }
     .signature {
       margin-top: 16px;
@@ -895,8 +914,8 @@
           <label for="invoiceTemplate">ប្រភេទទម្រង់</label>
           <select id="invoiceTemplate">
             <option value="">-- ជ្រើសរើសទម្រង់ INVOICE --</option>
-            <option value="student">ទម្រង់ទី1 សម្រាប់ចុះឈ្មោះសិស្ស</option>
-            <option value="service">ទម្រង់ទី2 សម្រាប់សេវាកម្មទូទៅ</option>
+            <option value="student">ទម្រង់ទី1 — INVOICE សម្រាប់ចុះឈ្មោះសិស្ស</option>
+            <option value="service">ទម្រង់ទី2 — INVOICE សម្រាប់សេវាកម្មទូទៅ</option>
           </select>
           <div class="template-required-notice" id="templateRequiredNotice">
             សូមជ្រើសរើសទម្រង់ INVOICE មុនពេលបំពេញព័ត៌មានអតិថិជន។
@@ -1060,6 +1079,9 @@
           </div>
 
           <div class="footer-cards">
+            <div class="payment-qr">
+              <img class="qr-img" src="bank qr code V2.svg" alt="Bank QR Code">
+            </div>
             <div class="footer-signature">
               <div class="signature" id="signatureBox">
                 <div class="sign-name">ឃិន ឈិនឡុង</div>
@@ -1169,6 +1191,13 @@
         if (!window.CLK_LOGO_DATA) return;
         document.querySelectorAll('.logo-img').forEach(img => {
           img.src = window.CLK_LOGO_DATA;
+        });
+      }
+
+      function applyBankQrSource() {
+        if (!window.CLK_BANK_QR_DATA) return;
+        document.querySelectorAll('.qr-img').forEach(img => {
+          img.src = window.CLK_BANK_QR_DATA;
         });
       }
 
@@ -1961,6 +1990,7 @@
         if (!requireInvoiceTemplate()) return;
         updateOutput();
         applyExportLogoSource();
+        applyBankQrSource();
         if (typeof html2canvas !== 'function') {
           alert('មិនអាច Save PNG បានទេ។ សូមពិនិត្យ Internet ដើម្បី load html2canvas library។');
           return;
@@ -1980,9 +2010,10 @@
           }
 
           const invoice = document.querySelector('.invoice');
+          const exportScale = Math.max(3, Math.min(4, window.devicePixelRatio || 3));
           const canvas = await html2canvas(invoice, {
             backgroundColor: null,
-            scale: 2,
+            scale: exportScale,
             useCORS: true,
             allowTaint: false,
             logging: false
@@ -2012,6 +2043,7 @@
       clearLegacyBrowserData();
       populateServices();
       applyExportLogoSource();
+      applyBankQrSource();
       initLockScreen();
       setInitialValues();
       setTemplateGateState();
